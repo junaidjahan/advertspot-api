@@ -1,33 +1,34 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-} from '@nestjs/common';
+import { Controller, Get, Body, Post } from '@nestjs/common';
+import { Public } from 'src/common/decorators';
+import { CreateUserDto } from '../user/dto/create-user.dto';
 import { AuthService } from './auth.service';
-import { CreateAuthDto } from './dto/create-auth.dto';
-import { UpdateAuthDto } from './dto/update-auth.dto';
+import { LoginDto } from './dto/login.dto';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
-  @Get()
-  token() {
-    return this.authService.token('hello', 'junaidjahan32@gmail.com');
+
+  @Public()
+  @Post('signup')
+  async signup(@Body() userDto: CreateUserDto) {
+    return this.authService.signup(userDto);
   }
-  // @Post()
-  // create(@Body() createAuthDto: CreateAuthDto) {
-  //   return this.authService.create(createAuthDto);
-  // }
 
-  // @Get()
-  // findAll() {
-  //   return this.authService.findAll();
-  // }
+  @Public()
+  @Post('login')
+  login(@Body() loginDto: LoginDto) {
+    return this.authService.login(loginDto);
+  }
 
+  @Get('get-all')
+  async findAll() {
+    return await this.authService.getResponse();
+  }
+
+  @Get('email-link')
+  sendVerificationEmail() {
+    return this.authService.sendVerificationEmail('6329db4daea51e65f06ffc94');
+  }
   // @Get(':id')
   // findOne(@Param('id') id: string) {
   //   return this.authService.findOne(+id);
