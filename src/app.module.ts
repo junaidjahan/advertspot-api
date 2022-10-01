@@ -10,6 +10,7 @@ import { MediaModule } from './modules/media/media.module';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './modules/auth/guards';
 import { JobModule } from './modules/job/job.module';
+import { ProposalModule } from './modules/proposal/proposal.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -22,6 +23,7 @@ import { JobModule } from './modules/job/job.module';
     AuthModule,
     MediaModule,
     JobModule,
+    ProposalModule,
   ],
   controllers: [AppController],
   providers: [
