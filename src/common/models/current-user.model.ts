@@ -1,5 +1,5 @@
 export interface CurrentUser {
-  id: boolean;
+  id: string;
   email: string;
   role: string;
   userType: string;

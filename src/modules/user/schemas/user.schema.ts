@@ -1,12 +1,13 @@
 import mongoose from 'mongoose';
+import { ROLE } from 'src/globals';
 
 export const UserSchema = new mongoose.Schema({
   FirstName: String,
   LastName: String,
-  PhoneNumber: Number,
+  PhoneNumber: { type: Number, default: null },
   UserType: String,
   Email: String,
   Password: String,
-  Role: String,
-  IsEmailVerified: Boolean,
+  Role: { type: String, default: ROLE.USER },
+  IsEmailVerified: { type: Boolean, default: false },
 });
