@@ -6,9 +6,7 @@ import { ProposalDto } from './dtos';
 
 @Injectable()
 export class ProposalRepository {
-  constructor(
-    @InjectModel('Proposal') private readonly proposalModel: Model<ProposalDto>,
-  ) {}
+  constructor(@InjectModel('Proposal') private readonly proposalModel: Model<ProposalDto>) {}
 
   async create(proposalDto: ProposalDto): Promise<ProposalDto> {
     const newProposalModel = new this.proposalModel(proposalDto);

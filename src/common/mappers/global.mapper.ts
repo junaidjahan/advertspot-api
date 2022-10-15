@@ -8,7 +8,7 @@ export const responseUser = ({
   UserType,
   id,
   IsEmailVerified,
-  Role,
+  Role
 }: CreateUserDto | any) => {
   return {
     Email,
@@ -18,6 +18,6 @@ export const responseUser = ({
     UserType,
     id,
     IsEmailVerified,
-    Role,
+    Role
   };
 };

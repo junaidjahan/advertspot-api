@@ -12,7 +12,7 @@ export class ProposalService {
     const proposal = await this.proposalRespository.create(proposalDto);
     return response({
       message: 'Proposal created successfully.',
-      data: proposal,
+      data: proposal
     });
   }
 }

@@ -9,5 +9,5 @@ export const JobSchema = new mongoose.Schema({
   Description: { type: String, default: null },
   Type: String,
   UserId: String,
-  Status: { type: String, default: JobStatusType.OPEN },
+  Status: { type: String, default: JobStatusType.OPEN }
 });

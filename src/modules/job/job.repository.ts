@@ -26,11 +26,7 @@ export class JobRepository {
   }
 
   async update(id: string, jobDto: Partial<JobDto>): Promise<JobDto> {
-    const updateJob = await this.jobModel.findByIdAndUpdate(
-      id,
-      jobDto,
-      RETURN_AFTER,
-    );
+    const updateJob = await this.jobModel.findByIdAndUpdate(id, jobDto, RETURN_AFTER);
     return updateJob;
   }
 

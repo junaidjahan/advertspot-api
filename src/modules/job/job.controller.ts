@@ -1,18 +1,11 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Post,
-  Put,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { GetCurrentUser } from 'src/common/decorators';
 import { CurrentUser } from 'src/common/models';
-import { UserSessioDto } from '../auth/dto';
 import { JobDto } from './dtos/job.dto';
 import { JobService } from './job.service';
 
+@ApiTags('Job')
 @Controller('job')
 export class JobController {
   constructor(private jobService: JobService) {}

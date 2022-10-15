@@ -1,37 +1,38 @@
-import { Module } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
-import { env } from 'process';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { UserModule } from './modules/user/user.module';
-import { AuthModule } from './modules/auth/auth.module';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { MediaModule } from './modules/media/media.module';
 import { APP_GUARD } from '@nestjs/core';
+import { MongooseModule } from '@nestjs/mongoose';
+import { LoggerMiddleware } from './middlewares/logger.middleware';
+import { AuthModule } from './modules/auth/auth.module';
 import { JwtAuthGuard } from './modules/auth/guards';
 import { JobModule } from './modules/job/job.module';
+import { MediaModule } from './modules/media/media.module';
 import { ProposalModule } from './modules/proposal/proposal.module';
+import { UserModule } from './modules/user/user.module';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
-      isGlobal: true,
+      isGlobal: true
     }),
     UserModule,
     MongooseModule.forRoot(
-      'mongodb+srv://Junaid_Jahan:advertspot@cluster0.gisesie.mongodb.net/advertspot?retryWrites=true&w=majority',
+      'mongodb+srv://Junaid_Jahan:advertspot@cluster0.gisesie.mongodb.net/advertspot?retryWrites=true&w=majority'
     ),
     AuthModule,
     MediaModule,
     JobModule,
-    ProposalModule,
+    ProposalModule
   ],
-  controllers: [AppController],
   providers: [
-    AppService,
     {
       provide: APP_GUARD,
-      useClass: JwtAuthGuard,
-    },
-  ],
+      useClass: JwtAuthGuard
+    }
+  ]
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer): void {
+    consumer.apply(LoggerMiddleware).forRoutes('*');
+  }
+}

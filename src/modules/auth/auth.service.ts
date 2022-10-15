@@ -1,9 +1,4 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-  ConflictException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { UserRepository } from '../user/user.repository';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload, VerificationTokenType } from 'src/globals';
@@ -23,7 +18,7 @@ export class AuthService {
     private userRepository: UserRepository,
     private jwtService: JwtService,
     private tokenVerificationService: TokenVerificationService,
-    private mailService: MailService,
+    private mailService: MailService
   ) {}
   async signup(userDto: CreateUserDto): Promise<any> {
     const { Email, Password } = userDto;
@@ -35,14 +30,14 @@ export class AuthService {
 
     const user: CreateUserDto = (await this.userRepository.create({
       ...userDto,
-      Password: hashedPassword,
+      Password: hashedPassword
     })) as CreateUserDto;
 
     await this.sendVerificationEmail(user.id, user);
 
     return response({
       message: 'User created successfully',
-      data: responseUser(user),
+      data: responseUser(user)
     });
   }
 
@@ -60,12 +55,12 @@ export class AuthService {
       sub: user.id,
       email: user.Email,
       role: user.Role,
-      userType: user.UserType,
+      userType: user.UserType
     });
     const resUser = responseUser(user);
     return response({
       message: 'Login successful',
-      data: new UserSessioDto({ ...resUser, JwtToken }),
+      data: new UserSessioDto({ ...resUser, JwtToken })
     });
   }
 
@@ -77,15 +72,12 @@ export class AuthService {
       }
     }
 
-    const { Token } = await this.tokenVerificationService.generateToken(
-      VerificationTokenType.VERIFY_EMAIL,
-      user.id!,
-    );
+    const { Token } = await this.tokenVerificationService.generateToken(VerificationTokenType.VERIFY_EMAIL, user.id!);
     await this.mailService.sendMail({
       to: 'junaidjahan50@gmail.com',
       from: '"AdvertSpot" admin@adverspot.app',
       subject: 'Confirm Email',
-      html: `Click following link to activate your account. ${process.env.URL}/auth/verify-email?token=${Token}`,
+      html: `Click following link to activate your account. ${process.env.URL}/auth/verify-email?token=${Token}`
     });
 
     return { Sent: true };
@@ -94,7 +86,7 @@ export class AuthService {
   async getToken(payload: JwtPayload): Promise<string> {
     const token = await this.jwtService.signAsync(payload, {
       expiresIn: 60 * 60 * 24 * 7,
-      secret: 'jwt-secret',
+      secret: 'jwt-secret'
     });
 
     return token;
@@ -105,7 +97,7 @@ export class AuthService {
 
     return response({
       message: 'Object created',
-      data: { name: 'junaid', email: 'junaidjahan32@gmail.com' },
+      data: { name: 'junaid', email: 'junaidjahan32@gmail.com' }
     });
   }
 }

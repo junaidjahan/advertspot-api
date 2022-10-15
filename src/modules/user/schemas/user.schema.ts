@@ -9,5 +9,5 @@ export const UserSchema = new mongoose.Schema({
   Email: String,
   Password: String,
   Role: { type: String, default: ROLE.USER },
-  IsEmailVerified: { type: Boolean, default: false },
+  IsEmailVerified: { type: Boolean, default: false }
 });

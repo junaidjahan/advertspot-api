@@ -6,9 +6,7 @@ import { UserModel } from './models/user.model';
 
 @Injectable()
 export class UserRepository {
-  constructor(
-    @InjectModel('User') private readonly userModel: Model<UserModel>,
-  ) {}
+  constructor(@InjectModel('User') private readonly userModel: Model<UserModel>) {}
 
   async create(userData: CreateUserDto) {
     const userExist = await this.userModel.findOne({ Email: userData.Email });

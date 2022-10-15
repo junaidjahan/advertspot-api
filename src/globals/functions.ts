@@ -5,7 +5,7 @@ export function response({ status = true, message = '', data }) {
   const response = new ResponseDto<any>({
     data,
     status,
-    message,
+    message
   });
   return response;
 }

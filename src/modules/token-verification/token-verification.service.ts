@@ -9,20 +9,20 @@ import { v4 } from 'uuid';
 export class TokenVerificationService {
   constructor(
     @InjectModel('TokenVerification')
-    private readonly verificationTokenRepo: Model<TokenVerificationModel>,
+    private readonly verificationTokenRepo: Model<TokenVerificationModel>
   ) {}
 
   async generateToken(Type: VerificationTokenType, UserId: string) {
     let token = await this.verificationTokenRepo.findOne({
       UserId,
-      Type,
+      Type
     });
 
     if (!token) {
       token = await this.verificationTokenRepo.create({
         UserId,
         Type,
-        Token: v4(),
+        Token: v4()
       });
     }
 

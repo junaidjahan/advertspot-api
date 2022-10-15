@@ -9,8 +9,6 @@ import { ProposalSchema } from './schemas/proposal.schema';
   controllers: [ProposalController],
   providers: [ProposalService, ProposalRepository],
   exports: [ProposalService],
-  imports: [
-    MongooseModule.forFeature([{ name: 'Proposal', schema: ProposalSchema }]),
-  ],
+  imports: [MongooseModule.forFeature([{ name: 'Proposal', schema: ProposalSchema }])]
 })
 export class ProposalModule {}
