@@ -4,7 +4,7 @@
     Dear
     {{firstName}},<br /><br />
     Click
-    <a href='{{url}}/auth/verify-email?token={{token}}'>here</a>
+    <a href='{{url}}/auth/verify-email/{{token}}'>here</a>
     to activate your account.<br /><br />
     Thank You!<br />
     Advertspot

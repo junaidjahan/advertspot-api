@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
+import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { hash } from 'bcrypt';
 import {
@@ -9,6 +9,7 @@ import {
   VerificationTokenRelationType,
   VerificationTokenType
 } from 'src/global';
+import { serializeUser } from 'src/serializers';
 import { MailService } from '../mail/mail.service';
 import { UserDocument } from '../user/schemas/user.schema';
 import { UserService } from '../user/user.service';
@@ -42,7 +43,7 @@ export class AuthService {
   }
 
   async validateUser({ sub }: JwtPayload) {
-    const user = await this.userService.model.findOne({ id: sub });
+    const user = await this.userService.model.findById(sub);
 
     if (!user) {
       throw new UnauthorizedException('Invalid token');
@@ -86,7 +87,8 @@ export class AuthService {
     if (isEmailVerified) {
       throw new ConflictException('Email already verified.');
     }
-    const { token } = await this.verificationTokenService.generateToken({
+
+    const token = await this.verificationTokenService.generateToken({
       type: VerificationTokenType.VERIFY_EMAIL,
       relationId: id,
       relationType: VerificationTokenRelationType.USER
@@ -97,41 +99,36 @@ export class AuthService {
       subject: 'Confirm Email',
       data: {
         token,
-        firstName: firstName
+        firstName
       },
       template: EmailTemplate.VERIFY_EMAIL
     });
-    return { Sent: true };
+    return { sent: true };
   }
 
-  async logout({ id }: UserDocument) {
-    const user = await this.userService.model.findOne({ id, refreshToken: { $ne: null } });
+  async logout({ _id }: UserDocument) {
+    const user = await this.userService.model.findOne({ _id, refreshToken: { $ne: null } });
 
     if (!user) {
       throw new ConflictException('Already logged out.');
     }
 
-    await this.userService.model.updateOne({ id }, { RefreshToken: undefined });
+    await this.userService.model.findByIdAndUpdate(_id, { refreshToken: undefined });
   }
 
   async verifyEmail(token: string) {
-    const isVerified = await this.verificationTokenService.verifyToken(token);
+    const { relationId } = await this.verificationTokenService.verifyToken(token);
 
-    if (isVerified) {
-      await this.userService.model.updateOne(
-        { id: isVerified.relationId },
-        {
-          $set: {
-            isEmailVerified: true
-          }
-        }
-      );
+    await this.userService.model.findByIdAndUpdate(relationId, { isEmailVerified: true });
 
-      return {
-        Message: 'Your email has been verified.'
-      };
-    }
+    return {
+      message: 'Your email has been verified.'
+    };
+  }
 
-    throw new InternalServerErrorException('Something went wrong.');
+  async getProfile({ id }: UserDocument) {
+    const user = await this.userService.findByIdOrFail(id);
+
+    return serializeUser(user);
   }
 }

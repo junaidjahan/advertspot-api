@@ -6,20 +6,38 @@ import { UserDocument } from '../user/schemas/user.schema';
 import { AuthService } from './auth.service';
 import { LoginDto, SignupDto } from './dtos';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { ThrottlerBehindProxyGuard } from './guards/throttler-behind-proxy.guard';
 
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  @UseGuards(ThrottlerBehindProxyGuard)
   @Post('signup')
   async signup(@Body() data: SignupDto) {
     return this.authService.signup(data);
   }
 
+  @UseGuards(ThrottlerBehindProxyGuard)
   @Post('login')
   login(@Body() loginDto: LoginDto) {
     return this.authService.login(loginDto);
+  }
+
+  @UseGuards(ThrottlerBehindProxyGuard)
+  @Post('admin-login')
+  async adminLogin(
+    @Body()
+    userData: LoginDto
+  ) {
+    return this.authService.login(userData, true);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('profile')
+  async getProfile(@CurrentUser() user: UserDocument) {
+    return this.authService.getProfile(user);
   }
 
   @Get('verify-email/:token')
@@ -27,6 +45,7 @@ export class AuthController {
     return this.authService.verifyEmail(token);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Post('send-email-verification')
   async sendEmailVerification(@CurrentUser() user: UserDocument) {
     return this.authService.sendEmailVerification(user);

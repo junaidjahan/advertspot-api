@@ -10,9 +10,29 @@ export function BaseService<T>(entity: Constructor<T>) {
     @InjectModel(entity.name)
     readonly model: Model<T & Document<string>>;
 
+    async findByIdOrFail(id: string) {
+      try {
+        const data = this.model.findById(id);
+
+        if (!data) {
+          throw new Error();
+        }
+
+        return data;
+      } catch {
+        throw new NotFoundException('No data found.');
+      }
+    }
+
     async findOneOrFail(filter: FilterQuery<Doc<T>>) {
       try {
-        return this.model.findOne(filter);
+        const data = this.model.findOne(filter);
+
+        if (!data) {
+          throw new Error();
+        }
+
+        return data;
       } catch {
         throw new NotFoundException('No data found.');
       }

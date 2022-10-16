@@ -18,23 +18,25 @@ export class VerificationTokenService extends BaseService(VerificationToken) {
       verificationToken = await this.model.create(options);
     }
 
-    return this.model.findByIdAndUpdate(verificationToken.id, {
-      ...verificationToken,
+    const token = v4();
+
+    await this.model.findByIdAndUpdate(verificationToken.id, {
       expires: addDays(new Date(), 1),
-      token: v4()
+      token
     });
-  }
-
-  async verifyToken(Token: string, deleteToken = true) {
-    const token = await this.model.findOne({ Token });
-
-    if (!token) {
-      throw new NotFoundException(`Token doesn't exist.`);
-    }
-    if (deleteToken) {
-      await token.delete();
-    }
 
     return token;
+  }
+
+  async verifyToken(token: string, deleteToken = true) {
+    const verificationToken = await this.model.findOne({ token });
+
+    if (!verificationToken) {
+      throw new NotFoundException(`Token doesn't exist.`);
+    }
+
+    deleteToken && (await verificationToken.delete());
+
+    return verificationToken;
   }
 }
