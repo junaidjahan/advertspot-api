@@ -3,7 +3,7 @@ import { addDays } from 'date-fns';
 import { Document } from 'mongoose';
 import { EmailTemplate, VerificationTokenRelationType } from 'src/global';
 
-export type VerificationTokenDocument = VerificationToken & Document;
+export type VerificationTokenDocument = VerificationToken & Document<string>;
 
 @Schema()
 export class VerificationToken {

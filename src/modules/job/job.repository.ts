@@ -1,15 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { CurrentUser } from 'src/global';
 import { RETURN_AFTER } from 'src/global/constants';
+import { UserDocument } from '../user/schemas/user.schema';
 import { JobDto } from './dtos/job.dto';
 
 @Injectable()
 export class JobRepository {
   constructor(@InjectModel('Job') private readonly jobModel: Model<JobDto>) {}
 
-  async create(jobDto: JobDto, user: CurrentUser): Promise<JobDto> {
+  async create(jobDto: JobDto, user: UserDocument): Promise<JobDto> {
     const newJobModel = new this.jobModel({ ...jobDto, UserId: user.id });
     const job = await newJobModel.save();
     return job;

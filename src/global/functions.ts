@@ -4,7 +4,7 @@ import { AuthService } from 'src/modules/auth/auth.service';
 import { serializeUser } from 'src/serializers';
 import { CONNECTED_SOCKETS } from './constants';
 import { UserType } from './enums';
-import { CurrentUser } from './types';
+import { SerializedUser } from './types';
 
 export const upperFirst = (text: string) => text.charAt(0).toUpperCase() + text.slice(1);
 
@@ -23,7 +23,7 @@ export const titleize = (text: string) => {
  * @param authSrv Auth Service
  * @param socket Connected socket
  * @param type It will be `get` or `set`. `get` will not add user into connected socket, but `set` will
- * @returns `CurrentUser` instance
+ * @returns `SerializedUser` instance
  */
 export const getSocketUser = async (authSrv: AuthService, socket: Socket, type: 'get' | 'set' = 'set') => {
   const {
@@ -49,9 +49,9 @@ export const getSocketUser = async (authSrv: AuthService, socket: Socket, type: 
     return userSocket?.user;
   }
 
-  let user = userSocket?.user as CurrentUser | undefined;
+  let user = userSocket?.user as SerializedUser | undefined;
   if (!user) {
-    user = serializeUser(await authSrv.userService.userModel.findById(userId));
+    user = serializeUser(await authSrv.userService.model.findById(userId));
   }
 
   if (userSocket?.socket && userSocket.socket.id !== socket.id) {

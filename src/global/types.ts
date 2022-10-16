@@ -9,12 +9,12 @@ export type JwtPayload = {
   sub: string;
 };
 
-export type CurrentUser = Pick<
+export type SerializedUser = Pick<
   UserDocument,
   'id' | 'firstName' | 'lastName' | 'email' | 'phone' | 'isEmailVerified' | 'role' | 'userTypes' | 'status'
 >;
 
 export type ConnectedSocket = {
-  user: CurrentUser;
+  user: SerializedUser;
   socket: Socket;
 };

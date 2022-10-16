@@ -1,6 +1,7 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { CurrentUser, Role } from 'src/global';
+import { Role } from 'src/global';
+import { UserDocument } from 'src/modules/user/schemas/user.schema';
 import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
 import { ROLES_KEY } from '../decorators/role.decorator';
 
@@ -24,7 +25,7 @@ export class WsRolesGuard implements CanActivate {
       return true;
     }
 
-    const { _user } = context.switchToWs().getData() as { _user?: CurrentUser };
+    const { _user } = context.switchToWs().getData() as { _user?: UserDocument };
 
     return roles.some(role => _user?.role === role);
   }

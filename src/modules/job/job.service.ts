@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { CurrentUser, JobStatus } from 'src/global';
+import { JobStatus } from 'src/global';
+import { UserDocument } from '../user/schemas/user.schema';
 import { JobDto } from './dtos/job.dto';
 import { JobRepository } from './job.repository';
 
@@ -7,7 +8,7 @@ import { JobRepository } from './job.repository';
 export class JobService {
   constructor(private jobRepository: JobRepository) {}
 
-  async create(jobDto: JobDto, user: CurrentUser) {
+  async create(jobDto: JobDto, user: UserDocument) {
     return this.jobRepository.create(jobDto, user);
   }
 

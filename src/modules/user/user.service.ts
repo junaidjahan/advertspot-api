@@ -1,17 +1,14 @@
 import { ConflictException, ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
 import { compare } from 'bcrypt';
-import { Model } from 'mongoose';
-import { CurrentUser, Role, UserStatus } from 'src/global';
-import { LoginDto } from '../auth/dto';
-import { User, UserDocument } from './schemas/user.schema';
+import { Role, UserStatus } from 'src/global';
+import { BaseService } from 'src/shared';
+import { LoginDto } from '../auth/dtos';
+import { User } from './schemas/user.schema';
 
 @Injectable()
-export class UserService {
-  constructor(@InjectModel(User.name) public userModel: Model<UserDocument>) {}
-
+export class UserService extends BaseService(User) {
   async findByEmail(email: string) {
-    const user = await this.userModel.findOne({ email });
+    const user = await this.model.findOne({ email });
 
     if (user) {
       throw new ConflictException(`User with same email already exists.`);
@@ -20,8 +17,8 @@ export class UserService {
     return user;
   }
 
-  async findByLogin({ email, password }: LoginDto, adminLogin = false): Promise<CurrentUser> {
-    const user = await this.userModel.findOne({ email, role: adminLogin ? Role.ADMIN : Role.USER });
+  async findByLogin({ email, password }: LoginDto, adminLogin = false) {
+    const user = await this.model.findOne({ email, role: adminLogin ? Role.ADMIN : Role.USER });
 
     if (!user) {
       throw new UnauthorizedException('Email not found.');

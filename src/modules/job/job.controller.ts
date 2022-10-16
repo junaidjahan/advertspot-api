@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { GetCurrentUser } from 'src/decorators';
-import { CurrentUser } from 'src/global';
+import { CurrentUser } from 'src/decorators';
+import { UserDocument } from '../user/schemas/user.schema';
 import { JobDto } from './dtos/job.dto';
 import { JobService } from './job.service';
 
@@ -11,7 +11,7 @@ export class JobController {
   constructor(private jobService: JobService) {}
 
   @Post()
-  async create(@Body() job: JobDto, @GetCurrentUser() user: CurrentUser) {
+  async create(@Body() job: JobDto, @CurrentUser() user: UserDocument) {
     return this.jobService.create(job, user);
   }
 

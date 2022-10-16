@@ -2,7 +2,6 @@ import { ConflictException, Injectable, InternalServerErrorException, Unauthoriz
 import { JwtService } from '@nestjs/jwt';
 import { hash } from 'bcrypt';
 import {
-  CurrentUser,
   EmailTemplate,
   JwtPayload,
   Role,
@@ -14,8 +13,8 @@ import { MailService } from '../mail/mail.service';
 import { UserDocument } from '../user/schemas/user.schema';
 import { UserService } from '../user/user.service';
 import { VerificationTokenService } from '../verification-token/verification-token.service';
-import { SignupDto } from './dto';
-import { LoginDto } from './dto/login.dto';
+import { SignupDto } from './dtos';
+import { LoginDto } from './dtos/login.dto';
 
 @Injectable()
 export class AuthService {
@@ -29,7 +28,7 @@ export class AuthService {
   async signup({ userType, password, ...userDto }: SignupDto): Promise<any> {
     await this.userService.findByEmail(userDto.email);
 
-    const user = await this.userService.userModel.create({
+    const user = await this.userService.model.create({
       userTypes: [userType],
       status: UserStatus.ACTIVE,
       role: Role.USER,
@@ -43,7 +42,7 @@ export class AuthService {
   }
 
   async validateUser({ sub }: JwtPayload) {
-    const user = await this.userService.userModel.findOne({ id: sub });
+    const user = await this.userService.model.findOne({ id: sub });
 
     if (!user) {
       throw new UnauthorizedException('Invalid token');
@@ -71,7 +70,7 @@ export class AuthService {
       : await generateToken(REFRESH_TOKEN_SECRET!, REFRESH_TOKEN_EXPIRES_IN!);
 
     if (!onlyAccessToken) {
-      await user.update({ $set: { refreshToken } });
+      await this.userService.model.findByIdAndUpdate(user.id, { refreshToken });
     }
 
     return { accessToken, refreshToken };
@@ -83,7 +82,7 @@ export class AuthService {
     return this.generateTokens(user as UserDocument);
   }
 
-  async sendEmailVerification({ id, isEmailVerified, email, firstName }: CurrentUser) {
+  async sendEmailVerification({ id, isEmailVerified, email, firstName }: UserDocument) {
     if (isEmailVerified) {
       throw new ConflictException('Email already verified.');
     }
@@ -105,21 +104,21 @@ export class AuthService {
     return { Sent: true };
   }
 
-  async logout(userId: string) {
-    const user = await this.userService.userModel.findOne({ id: userId, refreshToken: { $ne: null } });
+  async logout({ id }: UserDocument) {
+    const user = await this.userService.model.findOne({ id, refreshToken: { $ne: null } });
 
     if (!user) {
       throw new ConflictException('Already logged out.');
     }
 
-    await user.update({ RefreshToken: undefined });
+    await this.userService.model.updateOne({ id }, { RefreshToken: undefined });
   }
 
   async verifyEmail(token: string) {
     const isVerified = await this.verificationTokenService.verifyToken(token);
 
     if (isVerified) {
-      await this.userService.userModel.updateOne(
+      await this.userService.model.updateOne(
         { id: isVerified.relationId },
         {
           $set: {

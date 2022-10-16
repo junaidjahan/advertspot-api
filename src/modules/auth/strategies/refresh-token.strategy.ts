@@ -3,7 +3,7 @@ import { ContextIdFactory, ModuleRef } from '@nestjs/core';
 import { PassportStrategy } from '@nestjs/passport';
 import { Request } from 'express';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { CurrentUser, JwtPayload } from 'src/global';
+import { JwtPayload } from 'src/global';
 import { UserDocument } from 'src/modules/user/schemas/user.schema';
 import { AuthService } from '../auth.service';
 
@@ -18,7 +18,7 @@ export class RefreshTokenStrategy extends PassportStrategy(Strategy, 'refresh-to
     });
   }
 
-  async validate(request: Request, payload: JwtPayload): Promise<Partial<CurrentUser>> {
+  async validate(request: Request, payload: JwtPayload): Promise<Partial<UserDocument>> {
     const contextId = ContextIdFactory.getByRequest(request);
     const authSrv = await this.moduleRef.resolve(AuthService, contextId);
 

@@ -1,4 +1,4 @@
-import { CurrentUser } from 'src/global';
+import { SerializedUser } from 'src/global';
 import { UserDocument } from 'src/modules/user/schemas/user.schema';
 
 export const serializeUser = ({
@@ -11,7 +11,7 @@ export const serializeUser = ({
   role,
   userTypes,
   status
-}: UserDocument): CurrentUser => ({
+}: UserDocument): SerializedUser => ({
   id,
   firstName,
   lastName,
