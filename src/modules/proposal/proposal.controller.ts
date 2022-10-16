@@ -1,7 +1,7 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { GetCurrentUser } from 'src/common/decorators';
-import { CurrentUser } from 'src/common/models';
+import { GetCurrentUser } from 'src/decorators';
+import { CurrentUser } from 'src/global';
 import { ProposalDto } from './dtos';
 import { ProposalService } from './proposal.service';
 

@@ -1,5 +1,4 @@
-import { IsDefined, IsEmail, IsNumber, IsString } from 'class-validator';
-import { JobStatusType, ROLE, USER_TYPE } from 'src/globals';
+import { IsDefined, IsString } from 'class-validator';
 
 export class ProposalDto {
   public id?: string | null = null;

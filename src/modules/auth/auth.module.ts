@@ -1,17 +1,25 @@
 import { Module } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { AuthController } from './auth.controller';
-import { UserModule } from '../user/user.module';
-import { JwtStrategy } from './strategies';
 import { JwtModule } from '@nestjs/jwt';
-import { TokenVerificationModule } from '../token-verification/token-verification.module';
-import { MailService } from '../mail/mail.service';
-import { MailModule } from '../mail/mail.module';
+import { PassportModule } from '@nestjs/passport';
+import { ThrottlerModule } from '@nestjs/throttler';
+import { UserModule } from '../user/user.module';
+import { AuthController } from './auth.controller';
+import { AuthService } from './auth.service';
+import { AccessTokenStrategy } from './strategies/access-token.strategy';
+import { RefreshTokenStrategy } from './strategies/refresh-token.strategy';
 
 @Module({
+  providers: [AuthService, AccessTokenStrategy, RefreshTokenStrategy],
+  imports: [
+    JwtModule.register({}),
+    PassportModule,
+    UserModule,
+    ThrottlerModule.forRoot({
+      ttl: 60,
+      limit: 5
+    })
+  ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy],
-  exports: [AuthService],
-  imports: [UserModule, JwtModule.register({}), TokenVerificationModule, MailModule]
+  exports: [AuthService]
 })
 export class AuthModule {}

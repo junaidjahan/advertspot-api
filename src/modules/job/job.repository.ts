@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { CurrentUser } from 'src/common/models';
-import { RETURN_AFTER } from 'src/globals/constants';
+import { CurrentUser } from 'src/global';
+import { RETURN_AFTER } from 'src/global/constants';
 import { JobDto } from './dtos/job.dto';
 
 @Injectable()

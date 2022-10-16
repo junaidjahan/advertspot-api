@@ -2,7 +2,7 @@ import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
-import { MongooseExceptionFilter } from './exceptions';
+import { WsAdapter } from './ws.adapter';
 
 (async () => {
   const app = await NestFactory.create(AppModule);
@@ -20,7 +20,8 @@ import { MongooseExceptionFilter } from './exceptions';
     })
   );
 
-  app.useGlobalFilters(new MongooseExceptionFilter());
+  // app.useGlobalFilters(new MongooseExceptionFilter());
+  app.useWebSocketAdapter(new WsAdapter(app));
 
   const config = new DocumentBuilder()
     .setTitle('Advertspot API')

@@ -1,103 +1,138 @@
-import { BadRequestException, Injectable, NotFoundException, ConflictException } from '@nestjs/common';
-import { UserRepository } from '../user/user.repository';
+import { ConflictException, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { JwtPayload, VerificationTokenType } from 'src/globals';
-import { compareHash, hash, response } from 'src/globals/functions';
-import { ResponseDto } from 'src/common/dto';
-import { CreateUserDto } from '../user/dto/create-user.dto';
-import { LoginDto } from './dto/login.dto';
-import { responseUser } from 'src/common/mappers/global.mapper';
-import { UserSessioDto } from './dto/user-session.dto';
-import { TokenVerificationService } from '../token-verification/token-verification.service';
-import { UserModel } from '../user/models/user.model';
+import { hash } from 'bcrypt';
+import {
+  CurrentUser,
+  EmailTemplate,
+  JwtPayload,
+  Role,
+  UserStatus,
+  VerificationTokenRelationType,
+  VerificationTokenType
+} from 'src/global';
 import { MailService } from '../mail/mail.service';
+import { UserDocument } from '../user/schemas/user.schema';
+import { UserService } from '../user/user.service';
+import { VerificationTokenService } from '../verification-token/verification-token.service';
+import { SignupDto } from './dto';
+import { LoginDto } from './dto/login.dto';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private userRepository: UserRepository,
-    private jwtService: JwtService,
-    private tokenVerificationService: TokenVerificationService,
-    private mailService: MailService
+    public userService: UserService,
+    private verificationTokenService: VerificationTokenService,
+    private mailService: MailService,
+    private jwtService: JwtService
   ) {}
-  async signup(userDto: CreateUserDto): Promise<any> {
-    const { Email, Password } = userDto;
-    const userExist = await this.userRepository.find(Email);
-    if (userExist.length) {
-      throw new BadRequestException('This email is already in use.');
-    }
-    const hashedPassword = hash(Password);
 
-    const user: CreateUserDto = (await this.userRepository.create({
-      ...userDto,
-      Password: hashedPassword
-    })) as CreateUserDto;
+  async signup({ userType, password, ...userDto }: SignupDto): Promise<any> {
+    await this.userService.findByEmail(userDto.email);
 
-    await this.sendVerificationEmail(user.id, user);
-
-    return response({
-      message: 'User created successfully',
-      data: responseUser(user)
+    const user = await this.userService.userModel.create({
+      userTypes: [userType],
+      status: UserStatus.ACTIVE,
+      role: Role.USER,
+      password: await hash(password, 10),
+      ...userDto
     });
+
+    await this.sendEmailVerification(user);
+
+    return this.generateTokens(user);
   }
 
-  async login(userData: LoginDto) {
-    const [user] = await this.userRepository.find(userData.Email);
+  async validateUser({ sub }: JwtPayload) {
+    const user = await this.userService.userModel.findOne({ id: sub });
+
     if (!user) {
-      throw new NotFoundException('User not found');
-    }
-    const passwordExist = compareHash(userData.Password, user.Password);
-    if (!passwordExist) {
-      throw new BadRequestException('Wrong password');
+      throw new UnauthorizedException('Invalid token');
     }
 
-    const JwtToken = await this.getToken({
-      sub: user.id,
-      email: user.Email,
-      role: user.Role,
-      userType: user.UserType
-    });
-    const resUser = responseUser(user);
-    return response({
-      message: 'Login successful',
-      data: new UserSessioDto({ ...resUser, JwtToken })
-    });
+    return user;
   }
 
-  async sendVerificationEmail(Id: string, user?: UserModel) {
-    if (!user) {
-      user = await this.userRepository.findById(Id);
-      if (user.IsEmailVerified) {
-        throw new ConflictException('Email already verified.');
-      }
+  async verifyAccessToken(token: string): Promise<JwtPayload> {
+    return this.jwtService.verifyAsync(token, { secret: process.env.ACCESS_TOKEN_SECRET });
+  }
+
+  async generateTokens(user: UserDocument, onlyAccessToken = false) {
+    const { id, refreshToken: userRefreshToken } = user;
+
+    const generateToken = (secret: string, expiresIn: string) =>
+      this.jwtService.signAsync({ sub: id }, { secret, expiresIn });
+
+    const { ACCESS_TOKEN_EXPIRES_IN, ACCESS_TOKEN_SECRET, REFRESH_TOKEN_EXPIRES_IN, REFRESH_TOKEN_SECRET } =
+      process.env;
+
+    const accessToken = await generateToken(ACCESS_TOKEN_SECRET!, ACCESS_TOKEN_EXPIRES_IN!);
+    const refreshToken = onlyAccessToken
+      ? userRefreshToken
+      : await generateToken(REFRESH_TOKEN_SECRET!, REFRESH_TOKEN_EXPIRES_IN!);
+
+    if (!onlyAccessToken) {
+      await user.update({ $set: { refreshToken } });
     }
 
-    const { Token } = await this.tokenVerificationService.generateToken(VerificationTokenType.VERIFY_EMAIL, user.id!);
+    return { accessToken, refreshToken };
+  }
+
+  async login(data: LoginDto, adminLogin = false) {
+    const user = await this.userService.findByLogin(data, adminLogin);
+
+    return this.generateTokens(user as UserDocument);
+  }
+
+  async sendEmailVerification({ id, isEmailVerified, email, firstName }: CurrentUser) {
+    if (isEmailVerified) {
+      throw new ConflictException('Email already verified.');
+    }
+    const { token } = await this.verificationTokenService.generateToken({
+      type: VerificationTokenType.VERIFY_EMAIL,
+      relationId: id,
+      relationType: VerificationTokenRelationType.USER
+    });
+
     await this.mailService.sendMail({
-      to: 'junaidjahan50@gmail.com',
-      from: '"AdvertSpot" admin@adverspot.app',
+      to: email,
       subject: 'Confirm Email',
-      html: `Click following link to activate your account. ${process.env.URL}/auth/verify-email?token=${Token}`
+      data: {
+        token,
+        firstName: firstName
+      },
+      template: EmailTemplate.VERIFY_EMAIL
     });
-
     return { Sent: true };
   }
 
-  async getToken(payload: JwtPayload): Promise<string> {
-    const token = await this.jwtService.signAsync(payload, {
-      expiresIn: 60 * 60 * 24 * 7,
-      secret: 'jwt-secret'
-    });
+  async logout(userId: string) {
+    const user = await this.userService.userModel.findOne({ id: userId, refreshToken: { $ne: null } });
 
-    return token;
+    if (!user) {
+      throw new ConflictException('Already logged out.');
+    }
+
+    await user.update({ RefreshToken: undefined });
   }
 
-  async getResponse(): Promise<ResponseDto<any>> {
-    console.log('In response');
+  async verifyEmail(token: string) {
+    const isVerified = await this.verificationTokenService.verifyToken(token);
 
-    return response({
-      message: 'Object created',
-      data: { name: 'junaid', email: 'junaidjahan32@gmail.com' }
-    });
+    if (isVerified) {
+      await this.userService.userModel.updateOne(
+        { id: isVerified.relationId },
+        {
+          $set: {
+            isEmailVerified: true
+          }
+        }
+      );
+
+      return {
+        Message: 'Your email has been verified.'
+      };
+    }
+
+    throw new InternalServerErrorException('Something went wrong.');
   }
 }

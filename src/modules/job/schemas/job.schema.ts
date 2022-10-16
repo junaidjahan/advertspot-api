@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { JobStatusType } from 'src/globals';
+import { JobStatus } from 'src/global';
 
 export const JobSchema = new mongoose.Schema({
   Title: String,
@@ -9,5 +9,5 @@ export const JobSchema = new mongoose.Schema({
   Description: { type: String, default: null },
   Type: String,
   UserId: String,
-  Status: { type: String, default: JobStatusType.OPEN }
+  Status: { type: String, default: JobStatus.OPEN }
 });

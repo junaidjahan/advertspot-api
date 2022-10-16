@@ -1,5 +1,5 @@
-import { IsDefined, IsEmail, IsNumber, IsString } from 'class-validator';
-import { JobStatusType, ROLE, USER_TYPE } from 'src/globals';
+import { IsDefined, IsNumber, IsString } from 'class-validator';
+import { JobStatus } from 'src/global';
 
 export class JobDto {
   public id?: string | null = null;
@@ -22,7 +22,7 @@ export class JobDto {
   @IsString()
   public Budget: string | null = null;
 
-  public Status: JobStatusType | null = null;
+  public Status: JobStatus | null = null;
   public UserId: string | null = null;
 
   public Description: string | null = null;
