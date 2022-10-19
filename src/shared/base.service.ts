@@ -11,31 +11,23 @@ export function BaseService<T>(entity: Constructor<T>) {
     readonly model: Model<T & Document<string>>;
 
     async findByIdOrFail(id: string) {
-      try {
-        const data = this.model.findById(id);
+      const data = this.model.findById(id);
 
-        if (!data) {
-          throw new Error();
-        }
-
-        return data;
-      } catch {
+      if (!data) {
         throw new NotFoundException('No data found.');
       }
+
+      return data;
     }
 
     async findOneOrFail(filter: FilterQuery<Doc<T>>) {
-      try {
-        const data = this.model.findOne(filter);
+      const data = this.model.findOne(filter);
 
-        if (!data) {
-          throw new Error();
-        }
-
-        return data;
-      } catch {
+      if (!data) {
         throw new NotFoundException('No data found.');
       }
+
+      return data;
     }
   }
 
