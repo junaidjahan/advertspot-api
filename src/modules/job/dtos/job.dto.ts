@@ -19,8 +19,8 @@ export class JobDto {
   public Dimensions: string | null = null;
 
   @IsDefined()
-  @IsString()
-  public Budget: string | null = null;
+  @IsNumber()
+  public Budget: number | null = null;
 
   public Status: JobStatus | null = null;
   public UserId: string | null = null;
