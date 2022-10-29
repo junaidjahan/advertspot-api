@@ -9,8 +9,8 @@ import { JobDto } from './dtos/job.dto';
 export class JobRepository {
   constructor(@InjectModel('Job') private readonly jobModel: Model<JobDto>) {}
 
-  async create(jobDto: JobDto, user: UserDocument): Promise<JobDto> {
-    const newJobModel = new this.jobModel({ ...jobDto, UserId: user.id });
+  async create(jobDto: JobDto): Promise<JobDto> {
+    const newJobModel = new this.jobModel({ ...jobDto });
     const job = await newJobModel.save();
     return job;
   }
@@ -20,8 +20,8 @@ export class JobRepository {
     return job;
   }
 
-  async getAll(): Promise<Array<JobDto>> {
-    const jobs = await this.jobModel.find();
+  async getAll(user: UserDocument): Promise<Array<JobDto>> {
+    const jobs = await this.jobModel.find({ UserId: user.id });
     return jobs;
   }
 

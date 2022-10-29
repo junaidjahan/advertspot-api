@@ -8,16 +8,16 @@ import { JobRepository } from './job.repository';
 export class JobService {
   constructor(private jobRepository: JobRepository) {}
 
-  async create(jobDto: JobDto, user: UserDocument) {
-    return this.jobRepository.create(jobDto, user);
+  async create(jobDto: JobDto) {
+    return this.jobRepository.create(jobDto);
   }
 
   async getById(id: string) {
     return this.jobRepository.getBytId(id);
   }
 
-  async getAll() {
-    return this.jobRepository.getAll();
+  async getAll(user: UserDocument) {
+    return this.jobRepository.getAll(user);
   }
 
   async update(id: string, jobDto: Partial<JobDto>) {
@@ -32,11 +32,11 @@ export class JobService {
     return this.jobRepository.update(id, { Status: status });
   }
 
-  async getJobsByUserId(userId: string) {
-    const jobs = await this.jobRepository.getAll();
+  // async getJobsByUserId(userId: string) {
+  //   const jobs = await this.jobRepository.getAll();
 
-    return jobs.filter((job, index) => {
-      return job.UserId === userId;
-    });
-  }
+  //   return jobs.filter((job, index) => {
+  //     return job.UserId === userId;
+  //   });
+  // }
 }

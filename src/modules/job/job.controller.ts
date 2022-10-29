@@ -1,6 +1,7 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { CurrentUser } from 'src/decorators';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { UserDocument } from '../user/schemas/user.schema';
 import { JobDto } from './dtos/job.dto';
 import { JobService } from './job.service';
@@ -10,14 +11,17 @@ import { JobService } from './job.service';
 export class JobController {
   constructor(private jobService: JobService) {}
 
+  @UseGuards(JwtAuthGuard)
   @Post()
   async create(@Body() job: JobDto, @CurrentUser() user: UserDocument) {
-    return this.jobService.create(job, user);
+    job.UserId = user.id;
+    return this.jobService.create(job);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get()
-  async getAll() {
-    return this.jobService.getAll();
+  async getAll(@CurrentUser() user: UserDocument) {
+    return this.jobService.getAll(user);
   }
 
   @Get(':id')
@@ -25,10 +29,10 @@ export class JobController {
     return this.jobService.getById(id);
   }
 
-  @Get('user-jobs/:id')
-  async getJobsByUserId(@Param('id') id: string) {
-    return this.jobService.getJobsByUserId(id);
-  }
+  // @Get('user-jobs/:id')
+  // async getJobsByUserId(@Param('id') id: string) {
+  //   return this.jobService.getJobsByUserId(id);
+  // }
 
   @Put(':id')
   async update(@Param('id') id: string, @Body() body: Partial<JobDto>) {

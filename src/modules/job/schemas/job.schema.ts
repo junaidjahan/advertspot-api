@@ -5,7 +5,7 @@ export const JobSchema = new mongoose.Schema({
   Title: String,
   Quantity: Number,
   Dimensions: String,
-  Budget: String,
+  Budget: Number,
   Description: { type: String, default: null },
   Type: String,
   UserId: String,
