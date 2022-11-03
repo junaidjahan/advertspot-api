@@ -17,6 +17,14 @@ export enum VerificationTokenRelationType {
   USER = 'user'
 }
 
+export enum Category {
+  FLEX = 'flex',
+  BANNER = 'banner',
+  DIGITAL_MARKETING = 'digital merketing',
+  BROCHURE = 'brochure',
+  FLYER = 'flyer'
+}
+
 export enum WsEvent {
   JOINED = 'joined',
   LEFT = 'left',
