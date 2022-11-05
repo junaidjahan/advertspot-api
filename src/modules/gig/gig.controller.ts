@@ -24,16 +24,21 @@ export class GigController {
   constructor(private gigService: GigService) {}
 
   @UseGuards(JwtAuthGuard)
-  @UseInterceptors(FilesInterceptor('images', 8, { dest: './uploads/images' }))
   @Post()
-  async create(
-    @Body() gig: GigDto,
-    @CurrentUser() user: UserDocument,
-    @UploadedFiles() files: Array<Express.Multer.File>
-  ) {
+  async create(@Body() gig: GigDto, @CurrentUser() user: UserDocument) {
     gig.sellerId = user.id;
-    gig.images = files.map(file => file.path);
     return this.gigService.create(gig);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('seller-gigs')
+  async getSellerGigs(@CurrentUser() user: UserDocument) {
+    return this.gigService.getSellerGigs(user.id);
+  }
+
+  @Get()
+  async getAll() {
+    return this.gigService.getAll();
   }
 
   // @UseGuards(JwtAuthGuard)

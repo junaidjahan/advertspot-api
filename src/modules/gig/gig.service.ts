@@ -7,4 +7,12 @@ export class GigService extends BaseService(Gig) {
   async create(gigDto: GigDto) {
     return this.model.create(gigDto);
   }
+
+  async getSellerGigs(id: string) {
+    return this.model.find({ sellerId: id });
+  }
+
+  async getAll() {
+    return this.model.find();
+  }
 }
