@@ -15,9 +15,11 @@
     "start": "nest start",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
-    "start:prod": "node dist/main"
+    "start:prod": "node dist/main",
+    "heroku-postbuild": "npm install --only=dev --no-shrinkwrap && npm run build"
   },
   "dependencies": {
+    "@nestjs/cli": "^9.1.4",
     "@nestjs/common": "^9.1.4",
     "@nestjs/config": "^2.2.0",
     "@nestjs/core": "^9.1.4",
