@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { ThrottlerModule } from '@nestjs/throttler';
@@ -11,7 +12,16 @@ import { RefreshTokenStrategy } from './strategies/refresh-token.strategy';
 @Module({
   providers: [AuthService, AccessTokenStrategy, RefreshTokenStrategy],
   imports: [
-    JwtModule.register({}),
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => {
+        return {
+          secret: configService.get<string>('JWT_KEY')
+        };
+      },
+      inject: [ConfigService]
+    }),
+    ConfigModule,
     PassportModule,
     UserModule,
     ThrottlerModule.forRoot({
