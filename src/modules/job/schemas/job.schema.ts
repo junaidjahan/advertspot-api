@@ -6,8 +6,10 @@ export const JobSchema = new mongoose.Schema({
   Quantity: Number,
   Dimensions: String,
   Budget: Number,
-  Description: { type: String, default: null },
+  Location: String,
+  Description: String,
   Type: String,
   UserId: String,
-  Status: { type: String, default: JobStatus.OPEN }
+  Status: { type: String, default: JobStatus.OPEN },
+  Proposals: { type: Number, default: 0 }
 });

@@ -1,6 +1,7 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, Req, UseGuards } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { CurrentUser } from 'src/decorators';
+import { AnyObject } from 'src/global';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { UserDocument } from '../user/schemas/user.schema';
 import { JobDto } from './dtos/job.dto';
@@ -13,20 +14,29 @@ export class JobController {
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  async create(@Body() job: JobDto, @CurrentUser() user: UserDocument) {
+  async create(@Body() job: JobDto, @CurrentUser() user: UserDocument, @Req() req: Express.Request) {
+    console.log('In controller', job.Description);
+    console.log('request', req);
+
     job.UserId = user.id;
     return this.jobService.create(job);
   }
 
   @UseGuards(JwtAuthGuard)
   @Get()
-  async getAll(@CurrentUser() user: UserDocument) {
-    return this.jobService.getAll(user);
+  async getAll(@Query() filterQuery: any) {
+    const filter = JSON.parse(filterQuery.filter);
+    return this.jobService.getAll(filter);
   }
 
-  @Get(':id')
+  @Get('get-by-id/:id')
   async getById(@Param('id') id: string) {
     return this.jobService.getById(id);
+  }
+
+  @Get('cities')
+  async getAllCities() {
+    return this.jobService.getAllCities();
   }
 
   // @Get('user-jobs/:id')
@@ -34,7 +44,7 @@ export class JobController {
   //   return this.jobService.getJobsByUserId(id);
   // }
 
-  @Put(':id')
+  @Put('update/:id')
   async update(@Param('id') id: string, @Body() body: Partial<JobDto>) {
     return this.jobService.update(id, body);
   }
@@ -43,7 +53,7 @@ export class JobController {
     return this.jobService.updateStatus(id, body.Status);
   }
 
-  @Delete(':id')
+  @Delete('delete/:id')
   async delete(@Param('id') id: string) {
     return this.jobService.delete(id);
   }

@@ -22,8 +22,14 @@ export class JobDto {
   @IsNumber()
   public Budget: number | null = null;
 
+  @IsDefined()
+  @IsString()
+  public Location: string | null = null;
+
   public Status: JobStatus | null = null;
   public UserId: string | null = null;
 
+  @IsString()
   public Description: string | null = null;
+  public Proposals: string | null = null;
 }
