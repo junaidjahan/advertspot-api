@@ -20,9 +20,10 @@ export enum VerificationTokenRelationType {
 export enum Category {
   FLEX = 'flex',
   BANNER = 'banner',
-  DIGITAL_MARKETING = 'digital merketing',
+  DIGITAL_MARKETING = 'digital-marketing',
   BROCHURE = 'brochure',
-  FLYER = 'flyer'
+  FLYER = 'flyer',
+  POSTER = 'poster'
 }
 
 export enum WsEvent {
