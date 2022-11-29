@@ -42,8 +42,6 @@ export class JobController {
   @UseGuards(JwtAuthGuard)
   @Get('user-jobs')
   async getJobsByUserId(@CurrentUser() user: UserDocument) {
-    console.log(user);
-
     return this.jobService.getJobsByUserId(user.id);
   }
 
