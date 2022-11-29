@@ -40,11 +40,9 @@ export class JobService {
     return this.jobRepository.getAllCities();
   }
 
-  // async getJobsByUserId(userId: string) {
-  //   const jobs = await this.jobRepository.getAll();
+  async getJobsByUserId(userId: string) {
+    const jobs = await this.jobRepository.getByUserId(userId);
 
-  //   return jobs.filter((job, index) => {
-  //     return job.UserId === userId;
-  //   });
-  // }
+    return jobs;
+  }
 }
