@@ -26,6 +26,10 @@ export class JobRepository {
     const job = await this.jobModel.findById(id).exec();
     return job;
   }
+  async getByUserId(id: string): Promise<JobDto[]> {
+    const job = await this.jobModel.find({ UserId: id }).exec();
+    return job;
+  }
 
   async getAll(filter: AnyObject) {
     const { pageNo, pageSize, title, category } = filter;

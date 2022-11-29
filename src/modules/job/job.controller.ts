@@ -39,10 +39,13 @@ export class JobController {
     return this.jobService.getAllCities();
   }
 
-  // @Get('user-jobs/:id')
-  // async getJobsByUserId(@Param('id') id: string) {
-  //   return this.jobService.getJobsByUserId(id);
-  // }
+  @UseGuards(JwtAuthGuard)
+  @Get('user-jobs')
+  async getJobsByUserId(@CurrentUser() user: UserDocument) {
+    console.log(user);
+
+    return this.jobService.getJobsByUserId(user.id);
+  }
 
   @Put('update/:id')
   async update(@Param('id') id: string, @Body() body: Partial<JobDto>) {
