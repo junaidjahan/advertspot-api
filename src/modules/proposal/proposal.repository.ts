@@ -12,4 +12,9 @@ export class ProposalRepository {
     const proposal = await newProposalModel.save();
     return proposal;
   }
+
+  async getById(id: string) {
+    const proposal = this.proposalModel.findById(id);
+    return proposal;
+  }
 }

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { AnyObject, JobStatus } from 'src/global';
 import { UserDocument } from '../user/schemas/user.schema';
 import { JobDto } from './dtos/job.dto';
@@ -13,7 +13,9 @@ export class JobService {
   }
 
   async getById(id: string) {
-    return this.jobRepository.getBytId(id);
+    const job = await this.jobRepository.getBytId(id);
+
+    return job;
   }
 
   async getAll(filter: AnyObject) {

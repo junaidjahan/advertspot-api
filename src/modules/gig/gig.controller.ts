@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
   UploadedFiles,
   UseGuards,
   UseInterceptors
@@ -37,8 +38,9 @@ export class GigController {
   }
 
   @Get()
-  async getAll() {
-    return this.gigService.getAll();
+  async getAll(@Query() filterQuery: any) {
+    const filter = JSON.parse(filterQuery.filter);
+    return this.gigService.getAll(filter);
   }
 
   // @UseGuards(JwtAuthGuard)

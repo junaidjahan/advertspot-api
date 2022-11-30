@@ -30,4 +30,9 @@ export class UserService extends BaseService(User) {
 
     return user;
   }
+
+  async getAll() {
+    const users = await this.model.find();
+    return users;
+  }
 }
