@@ -29,6 +29,7 @@ export class JobController {
     return this.jobService.getAll(filter);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get('get-by-id/:id')
   async getById(@Param('id') id: string) {
     return this.jobService.getById(id);

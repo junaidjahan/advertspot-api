@@ -1,4 +1,10 @@
-import { ConflictException, ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  ConflictException,
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException
+} from '@nestjs/common';
 import { compare } from 'bcrypt';
 import { Role, UserStatus } from 'src/global';
 import { BaseService } from 'src/shared';
@@ -17,6 +23,15 @@ export class UserService extends BaseService(User) {
     return user;
   }
 
+  async findById(id: string) {
+    const user = await this.model.findById(id);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    return user;
+  }
+
   async findByLogin({ email, password }: LoginDto, adminLogin = false) {
     const user = await this.model.findOne({ email, role: adminLogin ? Role.ADMIN : Role.USER });
 
@@ -29,5 +44,10 @@ export class UserService extends BaseService(User) {
     }
 
     return user;
+  }
+
+  async getAll() {
+    const users = await this.model.find();
+    return users;
   }
 }

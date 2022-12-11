@@ -1,10 +1,10 @@
-import { IsDefined, IsString } from 'class-validator';
+import { IsDefined, IsNumber, IsString } from 'class-validator';
 
 export class ProposalDto {
   public id?: string | null = null;
 
   @IsDefined()
-  @IsString()
+  @IsNumber()
   public Amount: string | null = null;
 
   @IsString()

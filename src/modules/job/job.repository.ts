@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { AnyObject } from 'src/global';
@@ -24,6 +24,7 @@ export class JobRepository {
 
   async getBytId(id: string): Promise<JobDto> {
     const job = await this.jobModel.findById(id).exec();
+    if (!job) throw new NotFoundException('Job not found!');
     return job;
   }
   async getByUserId(id: string): Promise<JobDto[]> {
