@@ -24,11 +24,15 @@ export class GigService extends BaseService(Gig) {
   async getAll(filter: AnyObject) {
     const { pageNo, pageSize, title, category } = filter;
     const count = await this.model.find().count();
-    const gigs = await this.model
-      .find(category.length ? { Type: category } : {})
+    const gigsDocuments = await this.model
+      .find(category.length ? { category } : {})
       .skip(pageSize > 0 ? (pageNo - 1) * pageSize : 0)
       .limit(pageSize > 0 ? pageSize : count + 1);
     const users = await this.userService.getAll();
+    const gigs = gigsDocuments.filter(gig => {
+      return gig.title.includes(title);
+    });
+
     const data = gigs
       .map(gig => {
         return users
@@ -46,5 +50,14 @@ export class GigService extends BaseService(Gig) {
       })
       .flat();
     return { data, count };
+  }
+
+  async getById(id: string) {
+    const gig = await this.model.findById(id);
+    const user = await this.userService.findByIdOrFail(gig.sellerId);
+    return {
+      gig,
+      user
+    };
   }
 }

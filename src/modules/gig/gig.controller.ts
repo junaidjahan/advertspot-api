@@ -43,6 +43,11 @@ export class GigController {
     return this.gigService.getAll(filter);
   }
 
+  @Get('get-by-id/:id')
+  async getById(@Param('id') id: string) {
+    return this.gigService.getById(id);
+  }
+
   // @UseGuards(JwtAuthGuard)
   // @Get()
   // async getAll(@CurrentUser() user: UserDocument) {
