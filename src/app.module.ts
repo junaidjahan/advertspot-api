@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { LoggerMiddleware } from './middlewares/logger.middleware';
 import { AuthModule } from './modules/auth/auth.module';
+import { ConversationModule } from './modules/conversations/conversation.module';
 import { GigModule } from './modules/gig/gig.module';
 import { JobModule } from './modules/job/job.module';
 import { MailModule } from './modules/mail/mail.module';
@@ -24,7 +25,8 @@ import { VerificationTokenModule } from './modules/verification-token/verificati
     MediaModule,
     JobModule,
     ProposalModule,
-    GigModule
+    GigModule,
+    ConversationModule
   ]
 })
 export class AppModule implements NestModule {
