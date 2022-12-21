@@ -7,6 +7,7 @@ import {
   Post,
   Put,
   Query,
+  Req,
   UploadedFiles,
   UseGuards,
   UseInterceptors
@@ -25,14 +26,15 @@ export class ConversationController {
   constructor(private conversationService: ConversationService) {}
 
   @UseGuards(JwtAuthGuard)
-  @Get('get-conversations/:id')
-  async getConversations(@Param('id') id: string) {
-    return "your id is "+id;
+  @Get('get-conversations')
+  async getConversations(@CurrentUser() currentUser) {
+    return this.conversationService.getConversations(currentUser._id);
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('get-conversation')
-  async getConversation(@Body() data:ConversationDto) {
+  @Post('get-conversation')
+  async getConversation(@Body() data:ConversationDto,@CurrentUser() user) {
+    data.people[1] = user._id;
     return this.conversationService.getOrCreate(data);
   }
 }

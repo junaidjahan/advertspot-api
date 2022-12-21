@@ -1,1 +1,1 @@
-// export * from './conversations.dto';
+export * from './message.dto';

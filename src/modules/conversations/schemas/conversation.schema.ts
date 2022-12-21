@@ -6,10 +6,10 @@ export type ConversationDocument = Conversation & Document<string>;
 
 @Schema({ timestamps: true})
 export class Conversation {
-  @Prop({ type: [{ type: [mongoose.Schema.Types.ObjectId], ref: 'users' }] })
+  @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'users' }] })
   people: string;
 
-  @Prop({ type: { type: mongoose.Schema.Types.ObjectId, ref: 'messages', default:null} })
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'messages', default:null} )
   lastMessage: string;
 }
 
