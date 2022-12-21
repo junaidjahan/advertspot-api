@@ -1,63 +1,20 @@
-// import { Injectable } from '@nestjs/common';
-// import { InjectModel } from '@nestjs/mongoose';
-// import { Model } from 'mongoose';
-// import { AnyObject } from 'src/global';
-// import { BaseService } from 'src/shared';
-// import { Gig } from '../gig/schemas/gig.schema';
-// import { UserDocument } from '../user/schemas/user.schema';
-// import { UserService } from '../user/user.service';
-// import { MessageDto } from './dto/message.dto';
-// @Injectable()
-// export class ChatService extends BaseService(Gig) {
-//   constructor(private userService: UserService) {
-//     super();
-//   }
+import { Injectable } from '@nestjs/common';
+import * as Pusher from 'pusher';
 
-//   async create(gigDto: GigDto) {
-//     return this.model.create(gigDto);
-//   }
+@Injectable()
+export class MessagesService {
+  pusher: Pusher;
+  constructor() {
+    this.pusher = new Pusher({
+      appId: '1526980',
+      key: '48573c6fb91ca49c9d45',
+      secret: '7fb939602097ad2957e8',
+      cluster: 'ap2',
+      useTLS: true
+    });
+  }
 
-//   async getSellerGigs(id: string) {
-//     return this.model.find({ sellerId: id });
-//   }
-
-//   async getAll(filter: AnyObject) {
-//     const { pageNo, pageSize, title, category } = filter;
-//     const count = await this.model.find().count();
-//     const gigsDocuments = await this.model
-//       .find(category.length ? { category } : {})
-//       .skip(pageSize > 0 ? (pageNo - 1) * pageSize : 0)
-//       .limit(pageSize > 0 ? pageSize : count + 1);
-//     const users = await this.userService.getAll();
-//     const gigs = gigsDocuments.filter(gig => {
-//       return gig.title.includes(title);
-//     });
-
-//     const data = gigs
-//       .map(gig => {
-//         return users
-//           .filter(user => {
-//             if (user.id === gig.sellerId) {
-//               return user;
-//             }
-//           })
-//           .map(userData => {
-//             return {
-//               gig: gig,
-//               user: userData
-//             };
-//           });
-//       })
-//       .flat();
-//     return { data, count };
-//   }
-
-//   async getById(id: string) {
-//     const gig = await this.model.findById(id);
-//     const user = await this.userService.findByIdOrFail(gig.sellerId);
-//     return {
-//       gig,
-//       user
-//     };
-//   }
-// }
+  async trigger(channel: string, event: string, data: any) {
+    await this.pusher.trigger(channel, event, data);
+  }
+}
