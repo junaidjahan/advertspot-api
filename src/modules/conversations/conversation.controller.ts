@@ -35,6 +35,9 @@ export class ConversationController {
   @Post('get-conversation')
   async getConversation(@Body() data:ConversationDto,@CurrentUser() user) {
     data.people[1] = user._id;
+    if(data.people[0] == data.people[1]){
+      return {data:"error",message:'conversation not created due to same sender and receiver id'}
+    }
     return this.conversationService.getOrCreate(data);
   }
 }
