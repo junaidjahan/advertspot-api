@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
-import { Category, Role, UserStatus, UserType } from 'src/global';
+import { Category, Duration, Role, Unit, UserStatus, UserType } from 'src/global';
 
 export type GigDocument = Gig & Document<string>;
 
@@ -21,8 +21,17 @@ export class Gig {
   @Prop({ required: true })
   delivery: string;
 
+  @Prop({ required: true, enum: Duration })
+  duration: string;
+
+  @Prop({ enum: Unit })
+  unit: string;
+
   @Prop()
-  dimensions: string;
+  height: string;
+
+  @Prop()
+  width: string;
 
   @Prop({ required: true })
   sellerId: string;

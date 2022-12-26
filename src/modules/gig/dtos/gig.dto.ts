@@ -22,10 +22,19 @@ export class GigDto {
   @IsDefined()
   @IsString()
   public delivery: string | null = null;
+  @IsDefined()
+  @IsString()
+  public duration: string | null = null;
 
   @IsOptional()
   @IsString()
-  public dimensions: string | null = null;
+  public height: string | null = null;
+  @IsOptional()
+  @IsString()
+  public width: string | null = null;
+  @IsOptional()
+  @IsString()
+  public unit: string | null = null;
 
   @IsOptional()
   @IsString()

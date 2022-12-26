@@ -23,7 +23,21 @@ export enum Category {
   DIGITAL_MARKETING = 'digital-marketing',
   BROCHURE = 'brochure',
   FLYER = 'flyer',
-  POSTER = 'poster'
+  POSTER = 'poster',
+  BILLBOARD = 'billboard'
+}
+
+export enum Unit {
+  INCHES = 'inch',
+  FEETS = 'feet'
+}
+
+export enum Duration {
+  HOURS = 'hours',
+  DAYS = 'days',
+  WEEKS = 'weeks',
+  MONTHS = 'months',
+  YEARS = 'years'
 }
 
 export enum WsEvent {
