@@ -60,4 +60,36 @@ export class GigService extends BaseService(Gig) {
       user
     };
   }
+
+  async getBySellerId(sellerId: string, filter: AnyObject) {
+    const { pageNo, pageSize, title, category } = filter;
+    const gigs = await this.model
+      .find({ sellerId })
+      .skip(pageSize > 0 ? (pageNo - 1) * pageSize : 0)
+      .limit(pageSize);
+
+    const users = await this.userService.getAll();
+    const data = gigs
+      .map(gig => {
+        return users
+          .filter(user => {
+            if (user.id === gig.sellerId) {
+              return user;
+            }
+          })
+          .map(userData => {
+            return {
+              gig: gig,
+              user: userData
+            };
+          });
+      })
+      .flat();
+
+    const count = gigs.length;
+    return {
+      data,
+      count
+    };
+  }
 }
