@@ -9,6 +9,7 @@ import { JobModule } from './modules/job/job.module';
 import { MailModule } from './modules/mail/mail.module';
 import { MediaModule } from './modules/media/media.module';
 import { MessagesModule } from './modules/messages/message.module';
+import { OrderModule } from './modules/order/order.module';
 import { PaymentModule } from './modules/payment/payment.module';
 import { ProposalModule } from './modules/proposal/proposal.module';
 import { UserModule } from './modules/user/user.module';
@@ -30,7 +31,8 @@ import { VerificationTokenModule } from './modules/verification-token/verificati
     GigModule,
     ConversationModule,
     MessagesModule,
-    PaymentModule
+    PaymentModule,
+    OrderModule
   ]
 })
 export class AppModule implements NestModule {

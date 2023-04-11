@@ -18,10 +18,10 @@ export class Order {
   @Prop({ trim: true, required: true })
   amount: string;
 
-  @Prop({ trim: true, required: true })
+  @Prop({ trim: true })
   gigId: string;
 
-  @Prop({ trim: true, required: true })
+  @Prop({ trim: true })
   jobId: string;
 }
 

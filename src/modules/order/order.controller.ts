@@ -2,6 +2,8 @@ import { Body, Controller, Get, Param, Post, Query, UseGuards } from '@nestjs/co
 import { ApiTags } from '@nestjs/swagger';
 import { CurrentUser } from 'src/decorators';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { UserDocument } from '../user/schemas/user.schema';
+import { OrderDto } from './dtos';
 import { OrderService } from './order.service';
 
 @ApiTags('Order')
@@ -9,12 +11,11 @@ import { OrderService } from './order.service';
 export class OrderController {
   constructor(private orderService: OrderService) {}
 
-  // @UseGuards(JwtAuthGuard)
-  // @Post()
-  // async create(@Body() gig: GigDto, @CurrentUser() user: UserDocument) {
-  //   gig.sellerId = user.id;
-  //   return this.gigService.create(gig);
-  // }
+  @UseGuards(JwtAuthGuard)
+  @Post()
+  async create(@Body() order: OrderDto) {
+    return this.orderService.create(order);
+  }
 
   // @UseGuards(JwtAuthGuard)
   // @Get('seller-gigs')

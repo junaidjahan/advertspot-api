@@ -20,8 +20,10 @@ export class OrderDto {
   public amount: string | null = null;
 
   @IsString()
+  @IsOptional()
   public gigId: string | null = null;
 
   @IsString()
+  @IsOptional()
   public jobId: string | null = null;
 }
