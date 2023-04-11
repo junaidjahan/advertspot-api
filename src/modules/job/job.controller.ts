@@ -15,9 +15,6 @@ export class JobController {
   @UseGuards(JwtAuthGuard)
   @Post()
   async create(@Body() job: JobDto, @CurrentUser() user: UserDocument, @Req() req: Express.Request) {
-    console.log('In controller', job.Description);
-    console.log('request', req);
-
     job.UserId = user.id;
     return this.jobService.create(job);
   }

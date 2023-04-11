@@ -15,8 +15,6 @@ export class JobRepository {
   ) {}
 
   async create(jobDto: JobDto): Promise<JobDto> {
-    console.log('des', jobDto.Description);
-
     const newJobModel = new this.jobModel({ ...jobDto });
     const job = await newJobModel.save();
     return job;
@@ -27,6 +25,7 @@ export class JobRepository {
     if (!job) throw new NotFoundException('Job not found!');
     return job;
   }
+
   async getByUserId(id: string): Promise<JobDto[]> {
     const job = await this.jobModel.find({ UserId: id }).exec();
     return job;
