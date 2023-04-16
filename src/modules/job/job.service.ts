@@ -30,6 +30,7 @@ export class JobService {
     const job = await this.jobRepository.incrementProposal(id);
     return job;
   }
+
   async delete(id: string) {
     return this.jobRepository.delete(id);
   }

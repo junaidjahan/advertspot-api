@@ -4,7 +4,7 @@ import { AuthService } from 'src/modules/auth/auth.service';
 import { serializeUser } from 'src/serializers';
 import { CONNECTED_SOCKETS } from './constants';
 import { UserType } from './enums';
-import { SerializedUser } from './types';
+import { AnyObject, SerializedUser } from './types';
 
 export const upperFirst = (text: string) => text.charAt(0).toUpperCase() + text.slice(1);
 
@@ -16,6 +16,15 @@ export const titleize = (text: string) => {
   return unslugify(text)
     .toLowerCase()
     .replace(/(?:^|\s|-)\S/g, x => x.toUpperCase());
+};
+
+export const keysToLowerCase = (obj: AnyObject) => {
+  const lowerCaseObject = Object.keys(obj).reduce((acc, key) => {
+    acc[key.toLowerCase()] = obj[key];
+    return acc;
+  }, {});
+
+  return lowerCaseObject;
 };
 
 /**

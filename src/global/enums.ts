@@ -64,3 +64,10 @@ export enum EmailTemplate {
   VERIFY_EMAIL = 'verify-email',
   FORGOT_PASSWORD = 'forgot-password'
 }
+
+export enum OrderStatus {
+  IN_PROGRESS = 'in-progress',
+  COMPLETED = 'completed',
+  OPEN = 'open',
+  CANCELLED = 'calcelled'
+}

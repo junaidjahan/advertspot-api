@@ -7,6 +7,7 @@ import { Gig } from '../gig/schemas/gig.schema';
 import { UserDocument } from '../user/schemas/user.schema';
 import { UserService } from '../user/user.service';
 import { GigDto } from './dtos';
+
 @Injectable()
 export class GigService extends BaseService(Gig) {
   constructor(private userService: UserService) {
