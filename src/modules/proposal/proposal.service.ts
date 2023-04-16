@@ -14,7 +14,6 @@ export class ProposalService {
 
   async create(proposalDto: ProposalDto) {
     const prop = await this.proposalRespository.alreadyExist(proposalDto);
-    console.log('prop', prop);
 
     if (prop.length) {
       throw new ConflictException('Proposal already sent against this Job.');
