@@ -17,25 +17,15 @@ export class OrderController {
     return this.orderService.create(order);
   }
 
-  // @UseGuards(JwtAuthGuard)
-  // @Get('seller-gigs')
-  // async getSellerGigs(@CurrentUser() user: UserDocument) {
-  //   return this.gigService.getSellerGigs(user.id);
-  // }
+  @UseGuards(JwtAuthGuard)
+  @Get('all-buyer-orders')
+  async getAllBuyerOrders(@CurrentUser() user: UserDocument) {
+    return this.orderService.getAllBuyerOrders(user.id);
+  }
 
-  // @Get()
-  // async getAll(@Query() filterQuery: any) {
-  //   const filter = JSON.parse(filterQuery.filter);
-  //   return this.gigService.getAll(filter);
-  // }
-
-  // @Get('get-by-id/:id')
-  // async getById(@Param('id') id: string) {
-  //   return this.gigService.getById(id);
-  // }
-
-  // @Get('get-by-sellerId/:id')
-  // async getBySellerId(@Param('id') id: string, @Query() filterQuery: any) {
-  //   return this.gigService.getBySellerId(id, filterQuery);
-  // }
+  @UseGuards(JwtAuthGuard)
+  @Get('all-seller-orders')
+  async getAllSellerOrders(@CurrentUser() user: UserDocument) {
+    return this.orderService.getAllSellerOrders(user.id);
+  }
 }
