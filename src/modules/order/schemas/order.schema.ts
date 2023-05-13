@@ -23,6 +23,15 @@ export class Order {
 
   @Prop({ trim: true })
   jobId: string;
+
+  @Prop({ trim: true, default: null, required: false })
+  orderEndMonth: string;
+
+  @Prop({ trim: true, default: new Date(), required: false })
+  createdAt: Date;
+
+  @Prop({ trim: true, default: null, required: false })
+  updatedAt: Date;
 }
 
 export const OrderSchema = SchemaFactory.createForClass(Order);
