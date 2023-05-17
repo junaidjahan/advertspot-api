@@ -46,4 +46,10 @@ export class OrderController {
   async orderByMonth(@CurrentUser() user: UserDocument, @Param('userType') type: string) {
     return await this.orderService.ordersPlacedByMonth(user.id, type);
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('earnings-and-spendings/:userType')
+  async earningsSpendings(@CurrentUser() user: UserDocument, @Param('userType') type: string) {
+    return await this.orderService.amountSpentByMonth(user.id, type);
+  }
 }

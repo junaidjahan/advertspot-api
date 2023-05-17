@@ -199,4 +199,29 @@ export class OrderService extends BaseService(Order) {
 
     return orderMonths;
   }
+  async amountSpentByMonth(userId: string, type: string) {
+    let orders =
+      type === UserType.BUYER
+        ? await this.model.find({ buyerId: userId, status:OrderStatus.COMPLETED })
+        : await this.model.find({ sellerId: userId,status:OrderStatus.COMPLETED  });
+    if (!orders.length) {
+      return {};
+    }
+
+    const orderMonths: OrderByMonths = new OrderByMonths();
+    const ordersByMonth = orders.map(order => {
+      return {
+        month: new Date(order.createdAt).toLocaleString('default', { month: 'short' }),
+        amount: order.amount,
+        buyerId: order.buyerId,
+        sellerId: order.sellerId
+      };
+    });
+
+    ordersByMonth.forEach(ord => {
+      orderMonths[ord.month] += parseInt(ord.amount)
+    });
+
+    return orderMonths;
+  }
 }
