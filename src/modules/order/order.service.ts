@@ -31,42 +31,27 @@ export class OrderService extends BaseService(Order) {
   async getAllBuyerOrders(id: string) {
     const allOrders = await this.model.find({ buyerId: id });
     const orders = allOrders.map(async order => {
-      let orderObj = new OrdersModel();
-      if (order.gigId) {
-        const gigDoc = await this.gigService.findByIdOrFail(order.gigId);
-        let gig: Gig = JSON.parse(JSON.stringify(gigDoc));
-        orderObj = {
-          status: order.status,
-          id: order.id,
-          title: gig.title,
-          description: gig.description,
-          height: gig.height,
-          width: gig.width,
-          quantity: gig.quantity,
-          amount: gig.price,
-          proposals: null,
-          userType: UserType.BUYER,
-          orderEndMonth: order.orderEndMonth
-        };
-      } else if (order.jobId) {
-        const jobDoc = await this.jobService.getById(order.jobId);
-        let job = JSON.parse(JSON.stringify(jobDoc));
-        orderObj = {
-          status: order.status,
-          id: order.id,
-          title: job.Title,
-          description: job.Description,
-          height: job.Height,
-          width: job.Width,
-          quantity: job.Quantity,
-          amount: job.Budget,
-          proposals: job.Proposals,
-          userType: UserType.BUYER,
-          orderEndMonth: order.orderEndMonth
-        };
-      }
+      let orderObj = {};
+      const jobDoc = await this.jobService.getById(order.jobId);
+      let job = JSON.parse(JSON.stringify(jobDoc));
+
+      orderObj = {
+        status: order.status,
+        id: order.id,
+        title: job.Title,
+        description: job.Description,
+        height: job.Height,
+        width: job.Width,
+        quantity: job.Quantity,
+        amount: job.Budget,
+        proposals: job.Proposals,
+        userType: UserType.BUYER,
+        orderEndMonth: order.orderEndMonth
+      };
+
       return orderObj;
     });
+    console.log('Order', Promise.all(orders));
     return Promise.all(orders);
   }
 
@@ -145,7 +130,7 @@ export class OrderService extends BaseService(Order) {
         ? await this.model.find({ buyerId: userId })
         : await this.model.find({ sellerId: userId });
     if (!orders.length) {
-      throw new NotFoundException('No data found.');
+      return [];
     }
 
     orders.forEach(order => {
@@ -202,8 +187,8 @@ export class OrderService extends BaseService(Order) {
   async amountSpentByMonth(userId: string, type: string) {
     let orders =
       type === UserType.BUYER
-        ? await this.model.find({ buyerId: userId, status:OrderStatus.COMPLETED })
-        : await this.model.find({ sellerId: userId,status:OrderStatus.COMPLETED  });
+        ? await this.model.find({ buyerId: userId, status: OrderStatus.COMPLETED })
+        : await this.model.find({ sellerId: userId, status: OrderStatus.COMPLETED });
     if (!orders.length) {
       return {};
     }
@@ -219,7 +204,7 @@ export class OrderService extends BaseService(Order) {
     });
 
     ordersByMonth.forEach(ord => {
-      orderMonths[ord.month] += parseInt(ord.amount)
+      orderMonths[ord.month] += parseInt(ord.amount);
     });
 
     return orderMonths;

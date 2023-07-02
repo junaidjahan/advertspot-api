@@ -9,22 +9,22 @@ export class Gig {
   @Prop({ trim: true, required: true })
   title: string;
 
-  @Prop({ trim: true, required: true })
+  @Prop({ trim: true })
   price: string;
 
   @Prop()
   description: string;
 
-  @Prop({ trim: true, required: true })
+  @Prop({ trim: true })
   quantity: string;
 
-  @Prop({ required: true })
+  @Prop({ trim: true })
   delivery: string;
 
-  @Prop({ required: true, enum: Duration })
+  @Prop({ trim:true })
   duration: string;
 
-  @Prop({ enum: Unit })
+  @Prop({ trim:true })
   unit: string;
 
   @Prop()

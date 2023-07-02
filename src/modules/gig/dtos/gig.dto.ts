@@ -8,30 +8,32 @@ export class GigDto {
   @IsString()
   public title: string | null = null;
 
-  @IsString()
-  @IsDefined()
+  @IsOptional()
   public price: string | null = null;
 
   @IsOptional()
   @IsString()
   public description: string | null = null;
 
-  @IsString()
+  @IsOptional()
   public quantity: string | null = null;
 
-  @IsDefined()
+  @IsOptional()
   @IsString()
   public delivery: string | null = null;
-  @IsDefined()
+
+  @IsOptional()
   @IsString()
   public duration: string | null = null;
 
   @IsOptional()
   @IsString()
   public height: string | null = null;
+
   @IsOptional()
   @IsString()
   public width: string | null = null;
+
   @IsOptional()
   @IsString()
   public unit: string | null = null;
