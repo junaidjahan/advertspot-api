@@ -35,6 +35,9 @@ export class User {
 
   @Prop({ default: false })
   isEmailVerified: boolean;
+
+  @Prop({ type: {overallRating:0, totalRated:0}, default:{overallRating:0, totalRated:0}})
+  rating: {overallRating:number, totalRated:number};
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

@@ -131,4 +131,10 @@ export class AuthService {
 
     return serializeUser(user);
   }
+
+  async updateProfile(userId:string, userData: UserDocument) {
+    await this.userService.updateProfile(userId,userData);
+    const user  = await this.userService.findById(userId)
+    return serializeUser(user);
+  }
 }

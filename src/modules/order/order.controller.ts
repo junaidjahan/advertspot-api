@@ -5,6 +5,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { UserDocument } from '../user/schemas/user.schema';
 import { OrderDto } from './dtos';
 import { OrderService } from './order.service';
+import { ReviewDto } from './dtos/review.dto';
 
 @ApiTags('Order')
 @Controller('order')
@@ -52,4 +53,11 @@ export class OrderController {
   async earningsSpendings(@CurrentUser() user: UserDocument, @Param('userType') type: string) {
     return await this.orderService.amountSpentByMonth(user.id, type);
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('review')
+  async review(@Body() review: ReviewDto) {
+    return this.orderService.review(review);
+  }
+
 }

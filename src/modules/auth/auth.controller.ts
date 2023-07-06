@@ -39,6 +39,12 @@ export class AuthController {
   async getProfile(@CurrentUser() user: UserDocument) {
     return this.authService.getProfile(user);
   }
+  
+  @UseGuards(JwtAuthGuard)
+  @Post('update-profile')
+  async updateProfile(@Body() user: UserDocument, @CurrentUser() userData: UserDocument) {
+    return this.authService.updateProfile(userData.id, user);
+  }
 
   @Get('verify-email/:token')
   async verifyEmail(@Param('token') token: string) {

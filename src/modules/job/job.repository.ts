@@ -27,7 +27,7 @@ export class JobRepository {
   }
 
   async getByUserId(id: string): Promise<JobDto[]> {
-    const job = await this.jobModel.find({ UserId: id }).exec();
+    const job = await this.jobModel.find({ UserId: id }).sort({_id:-1}).exec();
     return job;
   }
 
@@ -37,7 +37,8 @@ export class JobRepository {
     const jobsDucuments = await this.jobModel
       .find(category.length ? { Type: category } : {})
       .skip(pageSize > 0 ? (pageNo - 1) * pageSize : 0)
-      .limit(pageSize > 0 ? pageSize : count + 1);
+      .limit(pageSize > 0 ? pageSize : count + 1)
+      .sort({_id:-1})
     const jobs = jobsDucuments.filter(job => {
       return job.Title.includes(title);
     });

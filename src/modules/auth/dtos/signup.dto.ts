@@ -10,7 +10,6 @@ export class SignupDto {
   lastName: string;
 
   @IsOptional()
-  @IsPhone()
   phone: string;
 
   @IsEnum(UserType)

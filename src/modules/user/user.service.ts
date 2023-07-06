@@ -9,7 +9,8 @@ import { compare } from 'bcrypt';
 import { Role, UserStatus } from 'src/global';
 import { BaseService } from 'src/shared';
 import { LoginDto } from '../auth/dtos';
-import { User } from './schemas/user.schema';
+import { User, UserDocument } from './schemas/user.schema';
+import { ObjectId } from 'mongodb'
 
 @Injectable()
 export class UserService extends BaseService(User) {
@@ -49,5 +50,19 @@ export class UserService extends BaseService(User) {
   async getAll() {
     const users = await this.model.find();
     return users;
+  }
+
+  async updateUser(userData: UserDocument) {
+    
+    const userId = userData.id;
+    const userObj = userData.toJSON();
+    delete userObj._id;
+    const user = await this.model.replaceOne({ _id: new ObjectId(userId )}, userObj);
+    return user;
+  }
+
+  async updateProfile(userId:string, userData: UserDocument) {
+    const user = await this.model.updateOne({_id: userId},{$set:{firstName:userData.firstName, lastName:userData.lastName, phone:userData.phone}});
+    return user;
   }
 }

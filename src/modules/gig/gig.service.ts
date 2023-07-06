@@ -28,10 +28,11 @@ export class GigService extends BaseService(Gig) {
     const gigsDocuments = await this.model
       .find(category.length ? { category } : {})
       .skip(pageSize > 0 ? (pageNo - 1) * pageSize : 0)
-      .limit(pageSize > 0 ? pageSize : count + 1);
+      .limit(pageSize > 0 ? pageSize : count + 1)
+      .sort({_id:-1})
     const users = await this.userService.getAll();
     const gigs = gigsDocuments.filter(gig => {
-      return gig.title.includes(title);
+      return gig.title.toLowerCase().includes(title.toLowerCase());
     });
 
     const data = gigs

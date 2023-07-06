@@ -27,6 +27,9 @@ export class Order {
   @Prop({ trim: true, default: null, required: false })
   orderEndMonth: string;
 
+  @Prop({ trim: true, default: false, required: false })
+  reviewed: boolean;
+
   @Prop({ trim: true, default: new Date(), required: false })
   createdAt: Date;
 

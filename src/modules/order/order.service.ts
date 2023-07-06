@@ -1,19 +1,23 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { JobStatus, OrderStatus, UserType } from 'src/global';
 import { BaseService } from 'src/shared';
-import { GigService } from '../gig/gig.service';
 import { JobService } from '../job/job.service';
 import { OrderDto } from './dtos';
 import { Order } from './schemas/order.schema';
-import OrdersModel from './types';
-import { Gig } from '../gig/schemas/gig.schema';
-import { JobSchema } from '../job/schemas/job.schema';
-import mongoose from 'mongoose';
+import { Model } from 'mongoose';
 import { OrderByMonths } from './types/orders.contants';
+import { InjectModel } from '@nestjs/mongoose';
+import { Review } from './schemas/review.schema';
+import { ReviewDto } from './dtos/review.dto';
+import { UserService } from '../user/user.service';
 
 @Injectable()
 export class OrderService extends BaseService(Order) {
-  constructor(private gigService: GigService, private jobService: JobService) {
+  constructor(
+    private userService: UserService,
+    private jobService: JobService,
+    @InjectModel(Review.name) private reviewModel: Model<Review>
+  ) {
     super();
   }
 
@@ -34,6 +38,7 @@ export class OrderService extends BaseService(Order) {
       let orderObj = {};
       const jobDoc = await this.jobService.getById(order.jobId);
       let job = JSON.parse(JSON.stringify(jobDoc));
+      const seller = await this.userService.findById(order.sellerId)
 
       orderObj = {
         status: order.status,
@@ -46,12 +51,13 @@ export class OrderService extends BaseService(Order) {
         amount: job.Budget,
         proposals: job.Proposals,
         userType: UserType.BUYER,
-        orderEndMonth: order.orderEndMonth
+        orderEndMonth: order.orderEndMonth,
+        reviewed: order.reviewed,
+        sellerName: `${seller.firstName} ${seller.lastName}`
       };
 
       return orderObj;
     });
-    console.log('Order', Promise.all(orders));
     return Promise.all(orders);
   }
 
@@ -59,41 +65,24 @@ export class OrderService extends BaseService(Order) {
     const allOrders = await this.model.find({ sellerId: id });
     const orders = allOrders.map(async order => {
       let orderObj = {};
-      if (order.gigId) {
-        const gigDoc = await this.gigService.findByIdOrFail(order.gigId);
-        let gig = JSON.parse(JSON.stringify(gigDoc));
 
-        orderObj = {
-          status: order.status,
-          id: order.id,
-          title: gig.title,
-          description: gig.description,
-          height: gig.height,
-          width: gig.width,
-          quantity: gig.quantity,
-          amount: gig.price,
-          proposals: null,
-          userType: UserType.SELLER,
-          orderEndMonth: order.orderEndMonth
-        };
-      } else if (order.jobId) {
-        const jobDoc = await this.jobService.getById(order.jobId);
-        let job = JSON.parse(JSON.stringify(jobDoc));
+      const jobDoc = await this.jobService.getById(order.jobId);
+      let job = JSON.parse(JSON.stringify(jobDoc));
 
-        orderObj = {
-          status: order.status,
-          id: order.id,
-          title: job.Title,
-          description: job.Description,
-          height: job.Height,
-          width: job.Width,
-          quantity: job.Quantity,
-          amount: job.Budget,
-          proposals: job.Proposals,
-          userType: UserType.SELLER,
-          orderEndMonth: order.orderEndMonth
-        };
-      }
+      orderObj = {
+        status: order.status,
+        id: order.id,
+        title: job.Title,
+        description: job.Description,
+        height: job.Height,
+        width: job.Width,
+        quantity: job.Quantity,
+        amount: job.Budget,
+        proposals: job.Proposals,
+        userType: UserType.SELLER,
+        orderEndMonth: order.orderEndMonth
+      };
+
       return orderObj;
     });
     return Promise.all(orders);
@@ -208,5 +197,22 @@ export class OrderService extends BaseService(Order) {
     });
 
     return orderMonths;
+  }
+
+  async review(reviewDto: ReviewDto) {
+    const review = await this.reviewModel.create(reviewDto);
+    await this.updateUserRating(review)
+    return review;
+  }
+
+  async updateUserRating(review:Review){
+    const order = await this.findByIdOrFail(review.orderId)
+    const user = await this.userService.findById(order.sellerId)
+    const averageRating = (review.service + review.communication + review.delivery)/3
+    user.rating.totalRated = user.rating.totalRated + 1
+    user.rating.overallRating = (user.rating.overallRating + averageRating)/user.rating.totalRated 
+    await this.model.updateOne({_id: order.id},{$set:{reviewed:true}})
+    await this.userService.updateUser(user)
+
   }
 }
